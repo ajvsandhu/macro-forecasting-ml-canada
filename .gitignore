@@ -1,0 +1,11 @@
+# Raw data (regenerate with: python scripts/pull_data.py)
+data/raw/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
