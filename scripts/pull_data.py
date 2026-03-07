@@ -1,4 +1,4 @@
-# Step 2: Data acquisition — pulls all macro data needed for the project
+# Data acquisition — pulls all macro data needed for the project
 
 from pathlib import Path
 import zipfile
@@ -13,7 +13,7 @@ START_DATE = "2005-01-01"
 END_DATE = "2024-12-31"
 
 
-# This function pulls the StatCan labour force table and returns it as a DataFrame
+# Pulls the StatCan labour force table and returns it as a DataFrame
 def pull_statcan_unemployment(data_dir):
 
     # download_tables downloads the full table as a zip from StatCan
@@ -42,7 +42,7 @@ def pull_statcan_unemployment(data_dir):
     # Return the full table as a DataFrame (datetime conversion happens in process_data.py)
     return df
 
-# This function pulls any daily series from the Bank of Canada Valet API and returns it as a monthly DataFrame
+# Pulls any daily series from the Bank of Canada Valet API and returns it as a monthly DataFrame
 def pull_boc_series(series_id, col_name):
 
     # Build the Valet API URL for this series
@@ -75,7 +75,7 @@ def pull_boc_series(series_id, col_name):
     return df
 
 
-# This function pulls StatCan CPI data (Table 18-10-0004-01) and returns it as a DataFrame
+# Pulls StatCan CPI data (Table 18-10-0004-01) and returns it as a DataFrame
 def pull_statcan_cpi(data_dir):
 
     from stats_can.sc import download_tables
@@ -95,7 +95,7 @@ def pull_statcan_cpi(data_dir):
     return df
 
 
-# This function pulls StatCan GDP data (Table 36-10-0434-01) and returns it as a DataFrame
+# Pulls StatCan GDP data (Table 36-10-0434-01) and returns it as a DataFrame
 def pull_statcan_gdp(data_dir):
 
     from stats_can.sc import download_tables
@@ -115,7 +115,7 @@ def pull_statcan_gdp(data_dir):
     return df
 
 
-# This function pulls WTI oil prices from FRED (free, no API key needed)
+# Pulls WTI oil prices from FRED (free, no API key needed)
 def pull_fred_oil_price():
 
     # FRED provides a direct CSV download for any series (free, no API key)
@@ -129,20 +129,44 @@ def pull_fred_oil_price():
     return df
 
 
-# This is the main function that runs all pulls and saves the results
+# Pulls CAD/USD exchange rate from FRED 
+def pull_fred_exchange_rate():
+
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id=DEXCAUS&cosd={START_DATE}&coed={END_DATE}"
+
+    # Download the CSV directly from FRED into a DataFrame
+    df = pd.read_csv(url)
+
+    # Rename columns from FRED's naming to ours
+    df = df.rename(columns={"observation_date": "date", "DEXCAUS": "cad_usd"})
+
+    # Convert the date column from strings to datetime objects
+    df["date"] = pd.to_datetime(df["date"])
+
+    # drop missing values from FRED
+    df["cad_usd"] = pd.to_numeric(df["cad_usd"], errors="coerce")
+    df = df.dropna()
+
+    # Convert daily data to monthly averages 
+    df = df.set_index("date").resample("ME").mean().reset_index()
+
+    return df
+
+
+# Runs all pulls and saves the results
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    # --- Bank of Canada (Valet API) ---
+    # Bank of Canada 
 
     print("Pulling BoC overnight rate (V39079)")
     overnight = pull_boc_series("V39079", "overnight_rate")
     overnight.to_csv(DATA_DIR / "boc_overnight_rate.csv", index=False)
     print(f"  {len(overnight)} rows")
 
-    print("Pulling BoC exchange rate CAD/USD (FXCADUSD)")
-    fx = pull_boc_series("FXCADUSD", "cad_usd")
-    fx.to_csv(DATA_DIR / "boc_exchange_rate.csv", index=False)
+    print("Pulling FRED exchange rate CAD/USD (DEXCAUS)")
+    fx = pull_fred_exchange_rate()
+    fx.to_csv(DATA_DIR / "fred_exchange_rate.csv", index=False)
     print(f"  {len(fx)} rows")
 
     print("Pulling BoC 10-year bond yield (BD.CDN.10YR.DQ.YLD)")
@@ -150,14 +174,14 @@ def main():
     bond.to_csv(DATA_DIR / "boc_bond_yield_10y.csv", index=False)
     print(f"  {len(bond)} rows")
 
-    # --- FRED ---
+    # FRED 
 
     print("Pulling FRED WTI oil price (MCOILWTICO)")
     oil = pull_fred_oil_price()
     oil.to_csv(DATA_DIR / "fred_oil_price_wti.csv", index=False)
     print(f"  {len(oil)} rows")
 
-    # --- Statistics Canada ---
+    # Statistics Canada 
 
     print("Pulling StatCan labour force (14-10-0287-01)")
     labour = pull_statcan_unemployment(DATA_DIR)
@@ -177,6 +201,5 @@ def main():
     print("Done - all data saved to data/raw/")
 
 
-# This runs main() only when the script is executed directly (not when imported)
 if __name__ == "__main__":
     main()
