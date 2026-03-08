@@ -1,3 +1,6 @@
 pandas>=2.0
 requests>=2.28
 stats-can>=3.0
+matplotlib>=3.7
+seaborn>=0.12
+statsmodels>=0.14
