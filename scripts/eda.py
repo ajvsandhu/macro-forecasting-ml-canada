@@ -110,12 +110,13 @@ def distribution_plots(df):
 
     for ax, col in zip(axes.flat, RAW_COLS):
         # For CPI, convert index values to % above 2002 (e.g. 120 -> 20%)
+        # Uses Freedman-Diaconis rule for optimal bin size
         if col == "cpi":
             plot_data = df[col] - 100
-            ax.hist(plot_data, bins=25, color="#3498db", edgecolor="white", alpha=0.8)
+            ax.hist(plot_data, bins="fd", color="#3498db", edgecolor="white", alpha=0.8)
             ax.axvline(plot_data.mean(), color="red", linestyle="--", label="mean")
         else:
-            ax.hist(df[col], bins=25, color="#3498db", edgecolor="white", alpha=0.8)
+            ax.hist(df[col], bins="fd", color="#3498db", edgecolor="white", alpha=0.8)
             ax.axvline(df[col].mean(), color="red", linestyle="--", label="mean")
 
         ax.set_title(titles[col])
