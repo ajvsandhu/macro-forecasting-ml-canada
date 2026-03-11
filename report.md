@@ -16,7 +16,7 @@ Outputs are written to `outputs/eda/` and `outputs/modeling/`.
 
 ## 1. Executive Summary
 
-I was exploring the idea whether Canadian unemployment can be reliably forecasted using macroeconomic indicators, and how monetary policy influences short-term labor market dynamics. Using monthly data from 2009(earliest it was avaliable) to 2024, I built seven forecasting models—baselines (Persistence, Historical Mean), statistical (ARIMA, VAR), and machine learning (Random Forest, XGBoost, Ridge). **Main result:** Persistence achieves the lowest RMSE (0.23) and MAPE (2.7%), followed closely by Ridge (0.24, 3.6%). The complex ML models do not outperform these simpler approaches. **Scenario simulation** with a Ridge model trained without the unemployment lag shows that rate cuts raise predicted unemployment over 12 months, consistent with a delayed monetary policy transmission. **Takeaway:** Next month's unemployment usually looks like this month's. Adding macro variables improves it very minimally. The indicators that predict unemployment best are employment rate, interest rate changes, GDP, and inflation. The scenario model shows that interest rates and unemployment move together in a sensible way, which helps interpret policy.
+I was exploring the idea whether Canadian unemployment can be reliably forecasted using macroeconomic indicators, and how monetary policy influences short term labor market dynamics. Using monthly data from 2009(earliest it was avaliable) to 2024, I built seven forecasting models—baselines (Persistence, Historical Mean), statistical (ARIMA, VAR), and machine learning (Random Forest, XGBoost, Ridge). **Main result:** Persistence achieves the lowest RMSE (0.23) and MAPE (2.7%), followed closely by Ridge (0.24, 3.6%). The complex ML models do not outperform these simpler approaches. **Scenario simulation** with a Ridge model trained without the unemployment lag shows that rate cuts raise predicted unemployment over 12 months, consistent with a delayed monetary policy transmission. **Takeaway:** Next month's unemployment usually looks like this month's. Adding macro variables improves it very minimally. The indicators that predict unemployment best are employment rate, interest rate changes, GDP, and inflation. The scenario model shows that interest rates and unemployment move together in a sensible way, which helps interpret policy.
 
 
 ## 2. Introduction
@@ -33,7 +33,7 @@ Unemployment is a key indicator of economic health and a primary target of monet
 
 - **Data range:** 2009-04 to 2024-12 (177 months after preprocessing)
 - **Models:** Persistence, Historical Mean, ARIMA(1,0,2), VAR(2), Random Forest, XGBoost, Ridge
-- **Scenario design:** Five BoC rate scenarios (−200bp, −100bp, status quo, +100bp, +200bp) over a 12-month horizon, using a Ridge model without the unemployment lag to isolate macro effects
+- **Scenario design:** Five BoC rate scenarios (−200bp, −100bp, status quo, +100bp, +200bp) over a 12 month horizon, using a Ridge model without the unemployment lag to isolate macro effects
 
 
 
@@ -48,12 +48,12 @@ Unemployment is a key indicator of economic health and a primary target of monet
 **Levels (raw values):**
 
 - **Overnight rate:** The Bank of Canada’s policy rate. It affects borrowing costs and economic activity; higher rates can slow growth and raise unemployment.
-- **Employment rate:** Share of the working-age population that is employed. It moves inversely with unemployment and is a direct measure of labour market strength.
+- **Employment rate:** Share of the working age population that is employed. It moves inversely with unemployment and is a direct measure of labour market strength.
 - **CPI:** Consumer Price Index, a measure of inflation. High inflation can lead to rate hikes, which may slow growth and raise unemployment.
 - **GDP:** Total output of the economy. Growth tends to support job creation; recessions raise unemployment.
 - **Bond yield:** Return on government bonds. Reflects expectations about rates, inflation, and growth.
-- **Exchange rate (CAD/USD):** Value of the Canadian dollar. Affects exports, imports, and employment in trade-exposed sectors.
-- **Oil price:** Price of crude oil. Important for Canada as an oil producer; swings affect energy-sector investment and jobs.
+- **Exchange rate (CAD/USD):** Value of the Canadian dollar. Affects exports, imports, and employment in trade exposed sectors.
+- **Oil price:** Price of crude oil. Important for Canada as an oil producer; swings affect energy sector investment and jobs.
 
 **Lags (past values):**
 
@@ -65,16 +65,16 @@ Unemployment is a key indicator of economic health and a primary target of monet
 - **rate_change_1m, rate_change_3m:** Change in the overnight rate over 1 and 3 months. Capture recent shifts in monetary policy.
 - **cpi_change_1m, cpi_change_12m:** Monthly and annual inflation. Rising inflation may prompt rate hikes and affect the labour market.
 - **gdp_change_1m, gdp_change_12m:** Monthly and annual GDP growth. Direct measures of economic momentum and job creation.
-- **oil_change_3m, fx_change_3m:** 3-month change in oil price and exchange rate. Reflect recent shocks to energy and trade.
+- **oil_change_3m, fx_change_3m:** 3 month change in oil price and exchange rate. Reflect recent shocks to energy and trade.
 
 **Rolling (moving averages):**
 
-- **rate_rolling_6m:** 6-month average of the overnight rate. Smooths short-term noise and highlights sustained policy stance.
-- **unemp_rolling_12m:** 12-month average of unemployment. Highlights longer-run labour market trends.
+- **rate_rolling_6m:** 6 month average of the overnight rate. Smooths short term noise and highlights sustained policy stance.
+- **unemp_rolling_12m:** 12 month average of unemployment. Highlights longer run labour market trends.
 
 **Derived:**
 
-- **yield_spread (10y − 3m):** Difference between 10-year and 3-month bond yields. The gap between long-term and short-term interest rates and when it turns negative, it often signals a higher chance of recession and rising unemployment.
+- **yield_spread (10y − 3m):** Difference between 10 year and 3 month bond yields. The gap between long term and short term interest rates and when it turns negative, it often signals a higher chance of recession and rising unemployment.
 
 ### Sample
 
@@ -92,10 +92,10 @@ Positive means it most with unemployement while neagtive means it moves opposite
 The strongest predictors of unemployment are:
 - last month's unemployment (0.93)
 - employment rate (−0.85)
-- 12-month rolling unemployment (0.68)
-- 3-month rate change (−0.58)
+- 12 month rolling unemployment (0.68)
+- 3 month rate change (−0.58)
 - GDP (−0.56)
-- 12-month CPI change (−0.55)
+- 12 month CPI change (−0.55)
 - and overnight rate (−0.50)
 
 Employment rate is the strongest macro predictor (best among external economic indicators) (r = −0.85). The overnight rate is negatively correlated at lag 0 (r ≈ −0.50).
@@ -106,13 +106,13 @@ Overnight rate correlations with unemployment shift from negative at short lags 
 
 ### Stationarity and Multicollinearity
 
-**Stationarity (ADF test):** Before modeling, we need to know whether a time series is stationary—meaning its mean and variance stay roughly constant over time, with no long-run trend. Non-stationary series (e.g. GDP or CPI that trend upward) can produce misleading correlations and unreliable forecasts.
+**Stationarity (ADF test):** Before modeling, we need to know whether a time series is stationary—meaning its mean and variance stay roughly constant over time, with no long run trend. Non stationary series (e.g. GDP or CPI that trend upward) can produce misleading correlations and unreliable forecasts.
 
-The Augmented Dickey-Fuller (ADF) test checks for a "unit root": a statistical property that makes a series non-stationary. The null hypothesis is that the series has a unit root (i.e. is non-stationary). If the p-value is below 0.05, we reject the null and conclude the series is stationary. If p ≥ 0.05, we fail to reject, and the series is treated as non-stationary.
+The Augmented Dickey-Fuller (ADF) test checks for a "unit root": a statistical property that makes a series non stationary. The null hypothesis is that the series has a unit root (i.e. is non stationary). If the p-value is below 0.05, we reject the null and conclude the series is stationary. If p ≥ 0.05, we fail to reject, and the series is treated as non stationary.
 
-**Results:** Unemployment and employment rates are stationary (p < 0.05), so we can use them in levels. CPI, GDP, overnight rate, bond yield, exchange rate, and oil price are non-stationary; for these we use differenced or change versions (e.g. month-over-month or year-over-year changes) where appropriate, which removes the trend and makes the series suitable for modeling.
+**Results:** Unemployment and employment rates are stationary (p < 0.05), so we can use them in levels. CPI, GDP, overnight rate, bond yield, exchange rate, and oil price are non stationary; for these we use differenced or change versions (e.g. month over month or year over year changes) where appropriate, which removes the trend and makes the series suitable for modeling.
 
-**Multicollinearity:** CPI and GDP are highly correlated (r ≈ 0.96) , as seen in the correlation matrix. If we don’t handle multicollinearity, the model’s coefficients can be unstable and hard to interpret, and forecasts can be less reliable. We therefore use Ridge or tree-based methods, which handle correlated features better than plain linear regression.
+**Multicollinearity:** CPI and GDP are highly correlated (r ≈ 0.96) , as seen in the correlation matrix. If we don’t handle multicollinearity, the model’s coefficients can be unstable and hard to interpret, and forecasts can be less reliable. We therefore use Ridge or tree based methods, which handle correlated features better than plain linear regression.
 
 ### Figures (from outputs/eda/)
 
@@ -132,10 +132,10 @@ The Augmented Dickey-Fuller (ADF) test checks for a "unit root": a statistical p
 
 ### Data Leakage Handling
 
-Two features were excluded because they contain current-month unemployment information:
+Two features were excluded because they contain current month unemployment information:
 
 - `unemp_change_1m` — current − previous month (leaks current value)
-- `unemp_rolling_12m` — 12-month rolling mean including current month
+- `unemp_rolling_12m` — 12 month rolling mean including current month
 
 ### Models
 
@@ -143,13 +143,13 @@ Two features were excluded because they contain current-month unemployment infor
 
 **Historical Mean (Baseline)** — Forecasts every month = the average unemployment over the training period (a flat line). No tuning. It performs poorly when unemployment has a trend: if unemployment is rising or falling, the actual values move away from that average, so the baseline fails. This matters because if Historical Mean did well, unemployment would just bounce around randomly—nothing to predict. Because it does poorly, we know unemployment moves in patterns (up, down, or persistent). Those patterns mean better models have something to learn.
 
-**ARIMA (Statistical)** — Autoregressive Integrated Moving Average. A univariate model that uses only past unemployment values to predict the next month—no macro variables. It combines an autoregressive part (past values), optional differencing (to remove trends), and a moving-average part (past forecast errors). The order (p,d,q) is chosen by searching combinations and picking the one with lowest AIC, we selected (1,0,2). Rolling 1-step-ahead: for each test month, refit on all prior data and predict one step. Used to see how well unemployment forecasts using only its own history, without any macro indicators—a pure time-series benchmark.
+**ARIMA (Statistical)** — Autoregressive Integrated Moving Average. A univariate model that uses only past unemployment values to predict the next month—no macro variables. It combines an autoregressive part (past values), optional differencing (to remove trends), and a moving average part (past forecast errors). The order (p,d,q) is chosen by searching combinations and picking the one with lowest AIC, we selected (1,0,2). Rolling 1 step ahead: for each test month, refit on all prior data and predict one step. Used to see how well unemployment forecasts using only its own history, without any macro indicators—a pure time series benchmark.
 
-**VAR (Statistical)** — Vector Autoregression. Models multiple series together (unemployment, employment, overnight rate, bond yield) by differencing them for stationarity and using lagged values of all variables. Each variable is predicted from its own lags and the lags of the others, capturing how they influence each other. Lag order (2) was chosen by AIC. Rolling 1-step-ahead forecasts on the differenced series, then converted back to levels. Used to capture joint dynamics between unemployment and key macro variables—how they move together over time when we allow feedback between them.
+**VAR (Statistical)** — Vector Autoregression. Models multiple series together (unemployment, employment, overnight rate, bond yield) by differencing them for stationarity and using lagged values of all variables. Each variable is predicted from its own lags and the lags of the others, capturing how they influence each other. Lag order (2) was chosen by AIC. Rolling 1 step ahead forecasts on the differenced series, then converted back to levels. Used to capture joint dynamics between unemployment and key macro variables—how they move together over time when we allow feedback between them.
 
-**Random Forest (ML)** — Ensemble of decision trees, each tree predicts using a random subset of data and features, and the final prediction is the average across trees. This reduces overfitting because no single tree sees all the data. Tuned via GridSearchCV with TimeSeriesSplit (5 folds): n_estimators [200, 500], max_depth [5, 10, None], min_samples_leaf [2, 5]. Used to capture non-linear relationships and feature interactions that linear models miss; the ensemble smooths out individual tree errors.
+**Random Forest (ML)** — Ensemble of decision trees, each tree predicts using a random subset of data and features, and the final prediction is the average across trees. This reduces overfitting because no single tree sees all the data. Tuned via GridSearchCV with TimeSeriesSplit (5 folds): n_estimators [200, 500], max_depth [5, 10, None], min_samples_leaf [2, 5]. Used to capture non linear relationships and feature interactions that linear models miss; the ensemble smooths out individual tree errors.
 
-**XGBoost (ML)** — Gradient boosting: builds trees one at a time, each correcting the errors of the previous ones. Unlike Random Forest (parallel trees), trees are built sequentially so each new tree targets the residuals of the ensemble so far. Tuned via GridSearchCV with TimeSeriesSplit: n_estimators [200, 500], max_depth [3, 5], learning_rate [0.05, 0.1]. Shallow trees (max_depth 3–5) help avoid overfitting. Used for potentially stronger non-linear forecasting; often competitive on tabular data.
+**XGBoost (ML)** — Gradient boosting: builds trees one at a time, each correcting the errors of the previous ones. Unlike Random Forest (parallel trees), trees are built sequentially so each new tree targets the residuals of the ensemble so far. Tuned via GridSearchCV with TimeSeriesSplit: n_estimators [200, 500], max_depth [3, 5], learning_rate [0.05, 0.1]. Shallow trees (max_depth 3–5) help avoid overfitting. Used for potentially stronger non linear forecasting; often competitive on tabular data.
 
 **Ridge (ML)** — Linear model (weighted sum of features) with L2 regularization that shrinks coefficients toward zero, which helps with multicollinearity. Features are standardized before fitting so the penalty is applied fairly. Alpha = 1.0 (fixed). Used for interpretable coefficients (we can see which features push unemployment up or down) and because it extrapolates well to new scenarios (e.g. "what if rates change?"), unlike tree models that cannot extend beyond the training range.
 
@@ -185,12 +185,12 @@ A separate Ridge model is trained **without** `unemp_lag_1m` for the scenario si
 
 ### Predictions vs Actual
 
-`outputs/modeling/predictions_vs_actual_*.png`: per-model plots. Persistence and Ridge track actual unemployment closely; VAR and tree models show more deviation.
+`outputs/modeling/predictions_vs_actual_*.png`: per model plots. Persistence and Ridge track actual unemployment closely; VAR and tree models show more deviation.
 
 ### Feature Importance
 
 - **Ridge coefficients:** Employment rate, overnight rate, and rate changes have strong effects. See `ridge_coefficients.png` and `scenario_coefficients.png`.
-- **Tree models:** `unemp_lag_1m` dominates; employment rate and rate-related features also matter. See `feature_importance_random_forest.png` and `feature_importance_xgboost.png`.
+- **Tree models:** `unemp_lag_1m` dominates; employment rate and rate related features also matter. See `feature_importance_random_forest.png` and `feature_importance_xgboost.png`.
 
 ### Scenario Simulation
 
@@ -212,7 +212,7 @@ A separate Ridge model is trained **without** `unemp_lag_1m` for the scenario si
 
 ### Can We Reliably Forecast?
 
-Yes, in a limited sense. Persistence and Ridge achieve RMSE ~0.23–0.24 and MAPE ~2.7–3.6%, indicating that 1-month-ahead unemployment can be forecast with reasonable accuracy. However, the best performance comes from simple models (Persistence, Ridge); complex ML and multivariate models do not improve forecasts at this horizon. Unemployment is highly persistent, so "next month ≈ this month" is hard to beat.
+Yes, in a limited sense. Persistence and Ridge achieve RMSE ~0.23–0.24 and MAPE ~2.7–3.6%, indicating that 1 month ahead unemployment can be forecast with reasonable accuracy. However, the best performance comes from simple models (Persistence, Ridge); complex ML and multivariate models do not improve forecasts at this horizon. Unemployment is highly persistent, so "next month ≈ this month" is hard to beat.
 
 ### How Does Monetary Policy Matter?
 
@@ -236,7 +236,7 @@ Scenario simulation suggests that the overnight rate is associated with unemploy
 
 ## 8. Conclusion
 
-Canadian unemployment can be forecasted with reasonable accuracy at a 1-month horizon. Persistence and Ridge achieve the best performance (RMSE ~0.23–0.24); more complex models do not improve on these. Scenario simulation with a Ridge model trained without the unemployment lag indicates that monetary policy is associated with unemployment in a directionally plausible way: rate cuts with higher unemployment, rate hikes with lower. The project demonstrates that simple, interpretable models can be effective for short-horizon unemployment forecasting and for exploring the macro→unemployment relationship under hypothetical policy scenarios.
+Canadian unemployment can be forecasted with reasonable accuracy at a 1 month horizon. Persistence and Ridge achieve the best performance (RMSE ~0.23–0.24); more complex models do not improve on these. Scenario simulation with a Ridge model trained without the unemployment lag indicates that monetary policy is associated with unemployment in a directionally plausible way: rate cuts with higher unemployment, rate hikes with lower. The project demonstrates that simple, interpretable models can be effective for short horizon unemployment forecasting and for exploring the macro→unemployment relationship under hypothetical policy scenarios.
 
 
 ### Full Metrics Table
