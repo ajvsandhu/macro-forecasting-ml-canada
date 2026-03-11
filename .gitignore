@@ -1,6 +1,9 @@
 # Data (regenerate with: python scripts/pull_data.py && python scripts/process_data.py)
 data/
 
+# Generated outputs (regenerate with: python scripts/eda.py && python scripts/model.py)
+outputs/
+
 # Python
 __pycache__/
 *.py[cod]
